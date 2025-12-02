@@ -1,80 +1,99 @@
-# ✈️ LanPilot: Yerel Ağ Uzak Masaüstü Kontrolcüsü
+# ✈️ LanPilot: Local Network Remote Desktop
 
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.7+-blue.svg" alt="Python">
   <img src="https://img.shields.io/badge/Flask-2.0+-green.svg" alt="Flask">
-  <img src="https://img.shields.io/badge/Lisans-MIT-yellow.svg" alt="License">
+  <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License">
   <br>
-  <strong>Kablosuz • Hızlı • Kurulum Gerektirmez</strong>
+  <strong>Wireless • Low Latency • No Installation</strong>
 </p>
 
-<p align="center">
-  LanPilot, bilgisayarınızı yerel ağ (Wi-Fi) üzerinden akıllı telefonunuzla tam kontrollü bir şekilde yönetmenizi sağlayan açık kaynaklı bir araçtır.
-</p>
+[English](#english) | [Türkçe](#türkçe)
 
 ---
 
-## 🎯 Projenin Amacı
+<a name="english"></a>
+## 🇺🇸 English
 
-Bilgisayar başında değilken (balkonda, mutfakta veya yatakta) bilgisayarınızı kontrol etme ihtiyacını çözmek için geliştirilmiştir. Piyasadaki TeamViewer/AnyDesk gibi çözümlerin aksine:
-- **İnternet gerektirmez** (Tamamen yerel ağda çalışır).
-- **Kurulum gerektirmez** (Sadece Python scriptini çalıştırmanız yeterlidir).
-- **Düşük gecikme (Low Latency)** sunar (Oyun şampiyon seçim ekranları, medya kontrolü vb. için idealdir).
+**LanPilot** is an open-source tool that allows you to fully control your computer via your smartphone over a local network (Wi-Fi).
 
-## ✨ Özellikler
+### 🎯 Purpose
+Developed to solve the need to control your PC when you are away from the keyboard (in the kitchen, balcony, or bed). Unlike TeamViewer/AnyDesk:
+- **No Internet Required:** Works entirely on your local network.
+- **No Installation:** Just run the Python script.
+- **Low Latency:** Optimized for gaming (champion selection etc.) and media control.
 
-- 📱 **Mobil Uyumlu Arayüz (PWA):** Telefonunuzda doğal bir uygulama gibi tam ekran çalışır.
-- 🖱️ **Akıllı Tıklama Sistemi:** Telefon ekranı ile bilgisayar ekranı arasındaki oran farkını (aspect ratio) otomatik hesaplar, tıklamaları piksel hassasiyetinde iletir.
-- ⚡ **Yüksek Performans:** `mss` kütüphanesi ile yüksek FPS'li ekran yakalama ve MJPEG yayını.
-- ⌨️ **Klavye Desteği:** Metin yazma, Enter, Backspace ve Alt-Tab gibi özel tuş kombinasyonları.
-- 🛡️ **Güvenli:** Verileriniz dış internete çıkmaz, her şey modeminiz içinde kalır.
+### ✨ Features
+- 📱 **PWA Support:** Works like a native app on your phone.
+- 🖱️ **Pixel-Perfect Control:** Automatically calculates aspect ratio for accurate clicking.
+- ⚡ **High Performance:** Uses `mss` for fast screen capture and MJPEG streaming.
+- ⌨️ **Keyboard Support:** Type text, press Enter, Backspace, and Alt-Tab.
+- 🛡️ **Secure:** Data stays within your local network.
 
-## 🛠️ Kullanılan Teknolojiler
+### 🚀 Setup
 
-Bu proje full-stack bir yaklaşımla geliştirilmiştir:
+1. **Clone the Repo:**
+   ```bash
+   git clone https://github.com/basaranbaran/lanpilot.git
+   cd lanpilot
+   ```
 
-| Alan | Teknoloji | Kullanım Amacı |
-|------|-----------|----------------|
-| **Backend** | Python, Flask | Web sunucusu ve API yönetimi |
-| **Görüntü İşleme** | MSS, Pillow (PIL) | Ekran yakalama ve sıkıştırma |
-| **Otomasyon** | PyAutoGUI | Fare ve klavye simülasyonu |
-| **Frontend** | HTML5, CSS3, JS | Responsive arayüz ve touch event yönetimi |
+2. **Install Requirements:**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-## 🚀 Kurulum ve Kullanım
+3. **Run:**
+   ```bash
+   python app.py
+   ```
 
-### 1. Projeyi Klonlayın
-```bash
-git clone https://github.com/kullaniciadiniz/lanpilot.git
-cd lanpilot
-```
+4. **Connect:**
+   Open your phone's browser and go to `http://YOUR_PC_IP:5000` (e.g., `192.168.1.20:5000`).
 
-### 2. Gereksinimleri Yükleyin
-```bash
-pip install -r requirements.txt
-```
+---
 
-### 3. Uygulamayı Başlatın
-```bash
-python app.py
-```
+<a name="türkçe"></a>
+## 🇹🇷 Türkçe
 
-### 4. Bağlanın!
-Bilgisayarınızın IP adresini terminalde göreceksiniz veya `ipconfig` (Windows) / `ifconfig` (Linux/Mac) ile öğrenebilirsiniz. Telefonunuzun tarayıcısını açın ve adrese gidin:
+**LanPilot**, bilgisayarınızı yerel ağ (Wi-Fi) üzerinden akıllı telefonunuzla tam kontrollü bir şekilde yönetmenizi sağlayan açık kaynaklı bir araçtır.
 
-```
-http://192.168.1.XX:5000
-```
+### 🎯 Projenin Amacı
+Bilgisayar başında değilken (balkonda, mutfakta veya yatakta) bilgisayarınızı kontrol etme ihtiyacını çözmek için geliştirilmiştir. TeamViewer/AnyDesk gibi çözümlerin aksine:
+- **İnternet Gerektirmez:** Tamamen yerel ağda çalışır.
+- **Kurulum Gerektirmez:** Sadece Python scriptini çalıştırmanız yeterlidir.
+- **Düşük Gecikme (Low Latency):** Oyun şampiyon seçim ekranları ve medya kontrolü için idealdir.
 
-> **İpucu:** Tam ekran deneyimi için tarayıcı menüsünden **"Ana Ekrana Ekle"** seçeneğini kullanın.
+### ✨ Özellikler
+- 📱 **Mobil Uyumlu Arayüz (PWA):** Telefonunuzda doğal bir uygulama gibi çalışır.
+- 🖱️ **Akıllı Tıklama Sistemi:** Telefon ekranı ile bilgisayar ekranı arasındaki oran farkını otomatik hesaplar, tıklamaları piksel hassasiyetinde iletir.
+- ⚡ **Yüksek Performans:** `mss` kütüphanesi ile yüksek FPS'li ekran yakalama.
+- ⌨️ **Klavye Desteği:** Metin yazma, Enter, Backspace ve Alt-Tab.
+- 🛡️ **Güvenli:** Verileriniz dış internete çıkmaz.
 
-## 📸 Ekran Görüntüleri
+### 🚀 Kurulum
 
-*(Buraya projenin çalışır haldeki ekran görüntülerini ekleyebilirsiniz)*
+1. **Projeyi İndirin:**
+   ```bash
+   git clone https://github.com/basaranbaran/lanpilot.git
+   cd lanpilot
+   ```
 
-## 🤝 Katkıda Bulunma
+2. **Gereksinimleri Yükleyin:**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-Pull request'ler kabul edilir. Büyük değişiklikler için lütfen önce tartışma başlatın.
+3. **Uygulamayı Başlatın:**
+   ```bash
+   python app.py
+   ```
 
-## 📝 Lisans
+4. **Bağlanın:**
+   Telefonunuzun tarayıcısından `http://BILGISAYAR_IP_ADRESI:5000` adresine gidin (Örn: `192.168.1.20:5000`).
+
+---
+
+## 📝 License / Lisans
 
 [MIT](https://choosealicense.com/licenses/mit/)

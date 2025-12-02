@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
@@ -58,9 +58,9 @@
     <div id="menu-toggle-btn">☰</div>
     <div id="ui-layer" class="hidden">
         <button class="btn blue" ontouchstart="triggerAltTab(); event.preventDefault()" onclick="triggerAltTab()">Alt-Tab</button>
-        <button class="btn" ontouchstart="sendText(); event.preventDefault()" onclick="sendText()">⌨️ Yaz</button>
+        <button class="btn" ontouchstart="sendText(); event.preventDefault()" onclick="sendText()">⌨️ Type</button>
         <button class="btn green" ontouchstart="sendKey('enter'); event.preventDefault()" onclick="sendKey('enter')">↵ Enter</button>
-        <button class="btn red" ontouchstart="sendKey('backspace'); event.preventDefault()" onclick="sendKey('backspace')">⌫ Sil</button>
+        <button class="btn red" ontouchstart="sendKey('backspace'); event.preventDefault()" onclick="sendKey('backspace')">⌫ Del</button>
     </div>
 
     <script>
@@ -68,47 +68,40 @@
         const uiLayer = document.getElementById('ui-layer');
         const menuBtn = document.getElementById('menu-toggle-btn');
 
-        // --- DÜZELTME 2: NOKTA ATIŞI TIKLAMA MANTIĞI ---
+        // Accurate click logic with aspect ratio mapping
         img.addEventListener('click', (e) => {
-            // Python'dan gelen PC ekran oranını alıyoruz
             const pcScreenRatio = {{ pc_screen_width }} / {{ pc_screen_height }};
-
-            // Telefondaki <img> elementinin boyutlarını ve oranını alıyoruz
             const rect = img.getBoundingClientRect();
             const containerRatio = rect.width / rect.height;
 
             let renderedWidth, renderedHeight, offsetX, offsetY;
 
-            // Siyah boşlukların (letterbox) nerede olduğunu ve boyutunu hesaplıyoruz
-            if (containerRatio > pcScreenRatio) { // Boşluklar sağda ve solda
+            if (containerRatio > pcScreenRatio) {
                 renderedHeight = rect.height;
                 renderedWidth = renderedHeight * pcScreenRatio;
                 offsetX = (rect.width - renderedWidth) / 2;
                 offsetY = 0;
-            } else { // Boşluklar altta ve üstte
+            } else {
                 renderedWidth = rect.width;
                 renderedHeight = renderedWidth / pcScreenRatio;
                 offsetX = 0;
                 offsetY = (rect.height - renderedHeight) / 2;
             }
 
-            // Tıklanan yerden siyah boşlukları çıkararak sadece resim üzerindeki koordinatı buluyoruz
             const xOnImage = e.clientX - rect.left - offsetX;
             const yOnImage = e.clientY - rect.top - offsetY;
 
-            // Eğer tıklama siyah boşluklara geldiyse, işlemi iptal ediyoruz
             if (xOnImage < 0 || xOnImage > renderedWidth || yOnImage < 0 || yOnImage > renderedHeight) {
                 return;
             }
 
-            // Son ve %100 doğru oranları hesaplayıp sunucuya gönderiyoruz
             const finalRelX = xOnImage / renderedWidth;
             const finalRelY = yOnImage / renderedHeight;
 
             postData('/click', { x: finalRelX, y: finalRelY });
         });
 
-        // --- SÜRÜKLENEBİLİR BUTON MANTIĞI (DEĞİŞİKLİK YOK) ---
+        // Draggable button logic
         let isDragging = false, hasMoved = false, offsetXBtn, offsetYBtn;
         function dragStart(e) {
             isDragging = true; hasMoved = false;
@@ -145,16 +138,15 @@
         document.addEventListener('touchmove', dragMove, { passive: false });
         document.addEventListener('touchend', dragEnd);
 
-        // --- DİĞER FONKSİYONLAR (DEĞİŞİKLİK YOK) ---
         function triggerAltTab() { postData('/alttab', {}); }
-        function sendText() { let text = prompt("Yazılacak metin:"); if (text) postData('/type', { text: text }); }
+        function sendText() { let text = prompt("Text to type:"); if (text) postData('/type', { text: text }); }
         function sendKey(key) { postData('/key', { key: key }); }
         function postData(url, data) {
             fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
-            }).catch(error => console.error('Hata:', error));
+            }).catch(error => console.error('Error:', error));
         }
     </script>
 </body>

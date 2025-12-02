@@ -6,14 +6,12 @@ from PIL import Image
 
 app = Flask(__name__)
 
-# PyAutoGUI ayarları
+# PyAutoGUI settings
 pyautogui.FAILSAFE = False
 SCREEN_WIDTH, SCREEN_HEIGHT = pyautogui.size()
 
-# --- ANA UYGULAMA KODLARI ---
-
 def gen_frames():
-    """Bilgisayar ekranını yakalayıp video akışı olarak yayınlar."""
+    """Captures the screen and streams it as video."""
     with mss.mss() as sct:
         monitor = {"top": 0, "left": 0, "width": SCREEN_WIDTH, "height": SCREEN_HEIGHT}
         while True:
@@ -29,17 +27,11 @@ def gen_frames():
                 yield (b'--frame\r\n'
                        b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
             except Exception as e:
-                print(f"Yayın Hatası: {e}")
+                print(f"Stream Error: {e}")
                 pass
-
-# --- URL Rotaları (Şifresiz) ---
 
 @app.route('/')
 def index():
-    """
-    DÜZELTME 1: Ana HTML sayfasını sunarken, tıklama doğruluğu için
-    bilgisayarın ekran boyutlarını da gönderir.
-    """
     return render_template(
         'index.html',
         pc_screen_width=SCREEN_WIDTH,
@@ -52,20 +44,14 @@ def video_feed():
 
 @app.route('/click', methods=['POST'])
 def click():
-    """
-    Fare tıklama işlemini gerçekleştirir.
-    Önce tıklama yapılır, SONRA Alt tuşu bırakılır.
-    Böylece Alt-Tab menüsünden seçim yapılabilir.
-    """
     data = request.json
     x = int(data['x'] * SCREEN_WIDTH)
     y = int(data['y'] * SCREEN_HEIGHT)
     
-    # 1. Önce fareyi hareket ettir ve tıkla
     pyautogui.moveTo(x, y)
     pyautogui.click()
     
-    # 2. Sonra (varsa) basılı kalan Alt tuşunu bırak
+    # Release Alt key if it was held down (for Alt-Tab)
     pyautogui.keyUp('alt')
     
     return jsonify({"status": "success"})
@@ -89,7 +75,6 @@ def press_key():
 @app.route('/alttab', methods=['POST'])
 def alt_tab():
     try:
-        # Alt-Tab menüsünün ekranda açık kalmasını sağlayan kod
         pyautogui.keyDown('alt')
         pyautogui.press('tab')
         return jsonify({"status": "success"})
