@@ -18,6 +18,7 @@
 
 **LanPilot** is an open-source tool that allows you to fully control your computer via your smartphone over a local network (Wi-Fi) or through Tailscale VPN.
 
+
 ### 🎯 The Story Behind LanPilot
 
 
@@ -27,12 +28,16 @@ As demonstrated in the video, I tested it by picking a League of Legends champio
 
 
 ### 🎯 Purpose
+
+
 Developed to solve the need to control your PC when you are away from the keyboard (in the kitchen, balcony, or bed). Unlike TeamViewer/AnyDesk:
+
 - **No Internet Required (Local Mode):** Works entirely on your local network.
 - **Global Access (Tailscale Mode):** Control from anywhere using Tailscale VPN without port forwarding.
 - **No Installation:** Just run the Python script.
 - **High Quality:** 75% resolution scaling with high-quality streaming for clear visuals.
 - **Low Latency:** Optimized for instant reactions, fast enough even for gaming menus.
+
 
 ### ✨ Features
 
@@ -41,7 +46,7 @@ The most exciting technical details that make this project special:
 
 - 🖱️ **Aspect Ratio Mapping:** The most challenging part of the project. Mathematically calculates the aspect ratio difference between your phone and monitor to ensure pixel-perfect clicking accuracy. This ensures that when you tap on your phone screen, the click lands exactly where you intended on your PC screen, regardless of screen size differences.
 
-- ⚡ **Low Latency (Düşük Gecikme):** Optimized for instant reactions, fast enough even for time-sensitive tasks like gaming champion selection. Uses `mss` library for high-performance screen capture and MJPEG streaming.
+- ⚡ **Low Latency:** Optimized for instant reactions, fast enough even for time-sensitive tasks like gaming champion selection. Uses `mss` library for high-performance screen capture and MJPEG streaming.
 
 - 📱 **PWA Support:** Works like a native app on your phone. Add it to your home screen for quick access.
 
@@ -50,6 +55,7 @@ The most exciting technical details that make this project special:
 - 🛡️ **Security & Privacy:** 
   - **Local Network Mode:** Data never leaves your local network (Localhost/WiFi).
   - **Tailscale VPN Mode:** When using Tailscale, data travels through an encrypted private network. Only devices logged into your account can access.
+
 
 ### 🚀 Setup
 
@@ -74,18 +80,22 @@ The most exciting technical details that make this project special:
    Open your phone's browser and go to `http://YOUR_PC_IP:5000` (e.g., `192.168.1.20:5000`).
    > 💡 **Tip:** The app will automatically detect and display all available connection URLs when it starts, including Tailscale VPN IPs (if installed) and local network IPs.
 
+
 ### 📱 How to Connect (Remote Control)
 
 
 #### 🏠 Local Network (Same WiFi)
+
 1. Ensure your phone and PC are connected to the same WiFi router.
 2. Run `python app.py`.
 3. Enter the **Network** URL shown in the terminal into your phone's browser.
 
 #### 🌍 Global Access (Tailscale & VPN)
+
 Controls your PC from anywhere (4G, Office, Vacation) without port forwarding.
 
 **Step-by-Step Setup:**
+
 1.  **Install:**
     *   **PC:** Download [Tailscale for Windows](https://tailscale.com/download/windows).
     *   **Phone:** Download Tailscale from App Store / Google Play.
@@ -96,12 +106,53 @@ Controls your PC from anywhere (4G, Office, Vacation) without port forwarding.
 
 > **🔒 Security Note:** Tailscale creates a private encrypted network. Only devices logged into **your** account can access this IP. Strangers cannot connect.
 
+
+### 🛠️ Technical Details
+
+
+#### Architecture
+
+- **Backend:** Flask (Python) with MJPEG streaming
+- **Screen Capture:** `mss` library for high-performance screen grabbing
+- **Input Control:** `PyAutoGUI` for mouse and keyboard simulation
+- **Frontend:** Vanilla JavaScript with PWA support
+- **Network:** Supports both local network (WiFi) and Tailscale VPN (100.x.x.x IP range)
+
+
+#### Key Algorithms
+
+
+**Aspect Ratio Mapping:**
+
+The core challenge was ensuring pixel-perfect clicking accuracy when the phone and PC have different aspect ratios. The algorithm:
+
+1. Calculates the PC screen aspect ratio
+2. Calculates the phone screen/container aspect ratio
+3. Determines how the PC screen is rendered (letterboxed or pillarboxed)
+4. Maps touch coordinates to the correct relative position on the PC screen
+5. Converts relative coordinates to absolute pixel coordinates
+
+This ensures that tapping anywhere on your phone screen results in an accurate click on the corresponding location on your PC screen.
+
+
+### 📝 License
+
+
+[MIT](https://choosealicense.com/licenses/mit/)
+
+
+### 🙏 Acknowledgments
+
+
+Special thanks to [Mert Okuyaz](https://www.linkedin.com/in/mert-okuyaz-6a18b1147/) for suggesting Tailscale VPN integration, which made this project accessible from anywhere in the world! 🌍
+
 ---
 
 <a name="türkçe"></a>
 ## 🇹🇷 Türkçe
 
 **LanPilot**, bilgisayarınızı yerel ağ (Wi-Fi) veya Tailscale VPN üzerinden akıllı telefonunuzla tam kontrollü bir şekilde yönetmenizi sağlayan açık kaynaklı bir araçtır.
+
 
 ### 🎯 LanPilot'un Hikayesi
 
@@ -114,12 +165,16 @@ Videoda göreceğiniz üzere sistemi League of Legends karakter seçim ekranınd
 
 
 ### 🎯 Projenin Amacı
+
+
 Bilgisayar başında değilken (balkonda, mutfakta veya yatakta) bilgisayarınızı kontrol etme ihtiyacını çözmek için geliştirilmiştir. TeamViewer/AnyDesk gibi çözümlerin aksine:
+
 - **İnternet Gerektirmez (Yerel Mod):** Tamamen yerel ağda çalışır.
 - **Küresel Erişim (Tailscale Modu):** Port açma derdi olmadan, Tailscale VPN ile dünyanın her yerinden erişim.
 - **Kurulum Gerektirmez:** Sadece Python scriptini çalıştırmanız yeterlidir.
 - **Yüksek Kalite:** %75 çözünürlük ölçekleme ve yüksek kalite ile net görüntü.
 - **Düşük Gecikme (Low Latency):** Anlık tepki gerektiren işleri bile telefondan yapabilecek kadar seri çalışıyor.
+
 
 ### ✨ Özellikler
 
@@ -137,6 +192,7 @@ Bilgisayar başında değilken (balkonda, mutfakta veya yatakta) bilgisayarını
 - 🛡️ **Güvenlik & Gizlilik:**
   - **Yerel Ağ Modu:** Verileriniz dış internete çıkmaz, tamamen yerel ağda (Localhost/WiFi) döner.
   - **Tailscale VPN Modu:** Tailscale kullanırken veriler şifreli özel ağ üzerinden iletilir. Sadece sizin hesabınızla giriş yapılmış cihazlar erişebilir.
+
 
 ### 🚀 Kurulum
 
@@ -161,18 +217,22 @@ Bilgisayar başında değilken (balkonda, mutfakta veya yatakta) bilgisayarını
    Telefonunuzun tarayıcısından `http://BILGISAYAR_IP_ADRESI:5000` adresine gidin (Örn: `192.168.1.20:5000`).
    > İpucu: Uygulama başladığında kullanabileceğiniz tüm adresleri ekrana yazdırır.
 
+
 ### 📱 Nasıl Bağlanılır?
 
 
 #### 🏠 Aynı Evde (WiFi)
+
 1. Telefonunuzun ve bilgisayarınızın aynı modeme bağlı olduğundan emin olun.
 2. `python app.py` komutunu çalıştırın.
 3. Uygulama ekranında çıkan **Network** adresini (örn: `192.168.1.25:5000`) telefon tarayıcısına yazın.
 
 #### 🌍 Ev Dışından Erişim (Tailscale & 4G)
+
 Port açma derdi olmadan, marketten veya başka bir şehirden bilgisayarınızı yönetin.
 
 **Adım Adım Kurulum:**
+
 1.  **İndir:**
     *   **PC:** [Windows için Tailscale](https://tailscale.com/download/windows) indirin ve kurun.
     *   **Telefon:** App Store veya Play Store'dan Tailscale uygulamasını indirin.
@@ -183,41 +243,11 @@ Port açma derdi olmadan, marketten veya başka bir şehirden bilgisayarınızı
 
 > **🔒 Güvenlik Notu:** Tailscale size özel şifreli bir ağ kurar. Sadece **sizin** hesabınızla giriş yapılmış cihazlar bu IP'ye erişebilir. Başkası giremez.
 
----
 
-## 🛠️ Technical Details
-
-
-### Architecture
-
-- **Backend:** Flask (Python) with MJPEG streaming
-- **Screen Capture:** `mss` library for high-performance screen grabbing
-- **Input Control:** `PyAutoGUI` for mouse and keyboard simulation
-- **Frontend:** Vanilla JavaScript with PWA support
-- **Network:** Supports both local network (WiFi) and Tailscale VPN (100.x.x.x IP range)
+### 🛠️ Teknik Detaylar
 
 
-### Key Algorithms
-
-
-**Aspect Ratio Mapping:**
-
-The core challenge was ensuring pixel-perfect clicking accuracy when the phone and PC have different aspect ratios. The algorithm:
-
-1. Calculates the PC screen aspect ratio
-2. Calculates the phone screen/container aspect ratio
-3. Determines how the PC screen is rendered (letterboxed or pillarboxed)
-4. Maps touch coordinates to the correct relative position on the PC screen
-5. Converts relative coordinates to absolute pixel coordinates
-
-This ensures that tapping anywhere on your phone screen results in an accurate click on the corresponding location on your PC screen.
-
----
-
-## 🛠️ Teknik Detaylar
-
-
-### Mimari
+#### Mimari
 
 - **Backend:** Flask (Python) ile MJPEG streaming
 - **Ekran Yakalama:** Yüksek performanslı ekran yakalama için `mss` kütüphanesi
@@ -226,7 +256,7 @@ This ensures that tapping anywhere on your phone screen results in an accurate c
 - **Ağ:** Hem yerel ağ (WiFi) hem de Tailscale VPN (100.x.x.x IP aralığı) desteği
 
 
-### Ana Algoritmalar
+#### Ana Algoritmalar
 
 
 **Aspect Ratio Mapping (En-Boy Oranı Eşleştirme):**
@@ -241,30 +271,14 @@ Piksel hassasiyetinde tıklama doğruluğu sağlamak, telefon ve PC'nin farklı 
 
 Bu sayede telefon ekranınızda herhangi bir yere dokunduğunuzda, PC ekranınızda karşılık gelen konuma doğru bir tıklama yapılır.
 
----
 
-## 📝 License
-
-
-[MIT](https://choosealicense.com/licenses/mit/)
-
----
-
-## 📝 Lisans
+### 📝 Lisans
 
 
 [MIT](https://choosealicense.com/licenses/mit/)
 
----
 
-## 🙏 Acknowledgments
-
-
-Special thanks to [Mert Okuyaz](https://www.linkedin.com/in/mert-okuyaz/) for suggesting Tailscale VPN integration, which made this project accessible from anywhere in the world! 🌍
-
----
-
-## 🙏 Teşekkürler
+### 🙏 Teşekkürler
 
 
-Tailscale VPN entegrasyonunu önerdiği için [Mert Okuyaz](https://www.linkedin.com/in/mert-okuyaz/)'a özel teşekkürler! Bu öneri sayesinde proje dünyanın her yerinden erişilebilir hale geldi! 🌍
+Tailscale VPN entegrasyonunu önerdiği için [Mert Okuyaz](https://www.linkedin.com/in/mert-okuyaz-6a18b1147/)'a özel teşekkürler! Bu öneri sayesinde proje dünyanın her yerinden erişilebilir hale geldi! 🌍
