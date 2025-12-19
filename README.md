@@ -135,12 +135,6 @@ The core challenge was ensuring pixel-perfect clicking accuracy when the phone a
 This ensures that tapping anywhere on your phone screen results in an accurate click on the corresponding location on your PC screen.
 
 
-### 📝 License
-
-
-[MIT](https://choosealicense.com/licenses/mit/)
-
-
 ### 🙏 Acknowledgments
 
 
@@ -270,12 +264,6 @@ Piksel hassasiyetinde tıklama doğruluğu sağlamak, telefon ve PC'nin farklı 
 5. Göreceli koordinatları mutlak piksel koordinatlarına dönüştürür
 
 Bu sayede telefon ekranınızda herhangi bir yere dokunduğunuzda, PC ekranınızda karşılık gelen konuma doğru bir tıklama yapılır.
-
-
-### 📝 Lisans
-
-
-[MIT](https://choosealicense.com/licenses/mit/)
 
 
 ### 🙏 Teşekkürler
