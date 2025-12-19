@@ -27,6 +27,8 @@ Sometimes the best projects are born from necessity (or a bit of laziness). LanP
 As demonstrated in the video, I tested it by picking a League of Legends champion. Yes, sometimes you develop software just so you don't miss your pick during the draft phase while grabbing a snack 😁
 
 
+
+
 ### 🎯 Purpose
 
 
