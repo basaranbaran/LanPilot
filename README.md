@@ -20,9 +20,11 @@
 
 ### 🎯 The Story Behind LanPilot
 
+
 Sometimes the best projects are born from necessity (or a bit of laziness). LanPilot started when I wanted to control my PC from the kitchen without walking back to my desk. Existing tools like TeamViewer were too heavy for such a simple task and required internet. So, I decided to build my own lightweight solution running entirely on the local network.
 
 As demonstrated in the video, I tested it by picking a League of Legends champion. Yes, sometimes you develop software just so you don't miss your pick during the draft phase while grabbing a snack 😁
+
 
 ### 🎯 Purpose
 Developed to solve the need to control your PC when you are away from the keyboard (in the kitchen, balcony, or bed). Unlike TeamViewer/AnyDesk:
@@ -33,6 +35,7 @@ Developed to solve the need to control your PC when you are away from the keyboa
 - **Low Latency:** Optimized for instant reactions, fast enough even for gaming menus.
 
 ### ✨ Features
+
 
 The most exciting technical details that make this project special:
 
@@ -49,6 +52,7 @@ The most exciting technical details that make this project special:
   - **Tailscale VPN Mode:** When using Tailscale, data travels through an encrypted private network. Only devices logged into your account can access.
 
 ### 🚀 Setup
+
 
 1. **Clone the Repo:**
    ```bash
@@ -71,6 +75,7 @@ The most exciting technical details that make this project special:
    > 💡 **Tip:** The app will automatically detect and display all available connection URLs when it starts, including Tailscale VPN IPs (if installed) and local network IPs.
 
 ### 📱 How to Connect (Remote Control)
+
 
 #### 🏠 Local Network (Same WiFi)
 1. Ensure your phone and PC are connected to the same WiFi router.
@@ -100,11 +105,13 @@ Controls your PC from anywhere (4G, Office, Vacation) without port forwarding.
 
 ### 🎯 LanPilot'un Hikayesi
 
+
 Bazen en iyi projeler kendi ihtiyacımdan veya "tembelliğimizden" doğar derler. LanPilot tam da böyle başladı. 🚀
 
 Bilgisayar başından kalkıp mutfağa gittiğimde, arka plandaki işlemleri kontrol etmek için tekrar odaya dönmek zor geliyordu. TeamViewer gibi uygulamalar hem internet gerektiriyor hem de bu basit ihtiyaç için hantal kalıyordu. Ben de "Neden kendi hafif (lightweight) çözümümü yazmıyorum?" dedim ve ortaya yerel ağ üzerinden çalışan bu aracı çıkardım.
 
 Videoda göreceğiniz üzere sistemi League of Legends karakter seçim ekranında test ettim. Evet, bazen sırf şampiyon seçimini mutfaktan yapabilmek ve sırayı kaçırmamak için bile yazılım geliştirebiliyorsunuz 😁
+
 
 ### 🎯 Projenin Amacı
 Bilgisayar başında değilken (balkonda, mutfakta veya yatakta) bilgisayarınızı kontrol etme ihtiyacını çözmek için geliştirilmiştir. TeamViewer/AnyDesk gibi çözümlerin aksine:
@@ -115,6 +122,7 @@ Bilgisayar başında değilken (balkonda, mutfakta veya yatakta) bilgisayarını
 - **Düşük Gecikme (Low Latency):** Anlık tepki gerektiren işleri bile telefondan yapabilecek kadar seri çalışıyor.
 
 ### ✨ Özellikler
+
 
 İşin mutfağında beni en çok heyecanlandıran detaylar:
 
@@ -131,6 +139,7 @@ Bilgisayar başında değilken (balkonda, mutfakta veya yatakta) bilgisayarını
   - **Tailscale VPN Modu:** Tailscale kullanırken veriler şifreli özel ağ üzerinden iletilir. Sadece sizin hesabınızla giriş yapılmış cihazlar erişebilir.
 
 ### 🚀 Kurulum
+
 
 1. **Projeyi İndirin:**
    ```bash
@@ -154,6 +163,7 @@ Bilgisayar başında değilken (balkonda, mutfakta veya yatakta) bilgisayarını
 
 ### 📱 Nasıl Bağlanılır?
 
+
 #### 🏠 Aynı Evde (WiFi)
 1. Telefonunuzun ve bilgisayarınızın aynı modeme bağlı olduğundan emin olun.
 2. `python app.py` komutunu çalıştırın.
@@ -175,19 +185,25 @@ Port açma derdi olmadan, marketten veya başka bir şehirden bilgisayarınızı
 
 ---
 
-## 🛠️ Technical Details / Teknik Detaylar
+## 🛠️ Technical Details
 
-### Architecture / Mimari
+
+### Architecture
+
 - **Backend:** Flask (Python) with MJPEG streaming
 - **Screen Capture:** `mss` library for high-performance screen grabbing
 - **Input Control:** `PyAutoGUI` for mouse and keyboard simulation
 - **Frontend:** Vanilla JavaScript with PWA support
 - **Network:** Supports both local network (WiFi) and Tailscale VPN (100.x.x.x IP range)
 
-### Key Algorithms / Ana Algoritmalar
+
+### Key Algorithms
+
 
 **Aspect Ratio Mapping:**
+
 The core challenge was ensuring pixel-perfect clicking accuracy when the phone and PC have different aspect ratios. The algorithm:
+
 1. Calculates the PC screen aspect ratio
 2. Calculates the phone screen/container aspect ratio
 3. Determines how the PC screen is rendered (letterboxed or pillarboxed)
@@ -198,12 +214,57 @@ This ensures that tapping anywhere on your phone screen results in an accurate c
 
 ---
 
-## 📝 License / Lisans
+## 🛠️ Teknik Detaylar
+
+
+### Mimari
+
+- **Backend:** Flask (Python) ile MJPEG streaming
+- **Ekran Yakalama:** Yüksek performanslı ekran yakalama için `mss` kütüphanesi
+- **Giriş Kontrolü:** Fare ve klavye simülasyonu için `PyAutoGUI`
+- **Frontend:** PWA desteği ile Vanilla JavaScript
+- **Ağ:** Hem yerel ağ (WiFi) hem de Tailscale VPN (100.x.x.x IP aralığı) desteği
+
+
+### Ana Algoritmalar
+
+
+**Aspect Ratio Mapping (En-Boy Oranı Eşleştirme):**
+
+Piksel hassasiyetinde tıklama doğruluğu sağlamak, telefon ve PC'nin farklı en-boy oranlarına sahip olması durumunda projenin en zorlu kısmıydı. Algoritma:
+
+1. PC ekran en-boy oranını hesaplar
+2. Telefon ekranı/kapsayıcı en-boy oranını hesaplar
+3. PC ekranının nasıl render edildiğini belirler (letterboxed veya pillarboxed)
+4. Dokunma koordinatlarını PC ekranındaki doğru göreceli konuma eşler
+5. Göreceli koordinatları mutlak piksel koordinatlarına dönüştürür
+
+Bu sayede telefon ekranınızda herhangi bir yere dokunduğunuzda, PC ekranınızda karşılık gelen konuma doğru bir tıklama yapılır.
+
+---
+
+## 📝 License
+
 
 [MIT](https://choosealicense.com/licenses/mit/)
 
 ---
 
-## 🙏 Acknowledgments / Teşekkürler
+## 📝 Lisans
+
+
+[MIT](https://choosealicense.com/licenses/mit/)
+
+---
+
+## 🙏 Acknowledgments
+
 
 Special thanks to [Mert Okuyaz](https://www.linkedin.com/in/mert-okuyaz/) for suggesting Tailscale VPN integration, which made this project accessible from anywhere in the world! 🌍
+
+---
+
+## 🙏 Teşekkürler
+
+
+Tailscale VPN entegrasyonunu önerdiği için [Mert Okuyaz](https://www.linkedin.com/in/mert-okuyaz/)'a özel teşekkürler! Bu öneri sayesinde proje dünyanın her yerinden erişilebilir hale geldi! 🌍
