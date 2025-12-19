@@ -2,13 +2,33 @@ from flask import Flask, render_template, Response, request, jsonify
 import mss
 import pyautogui
 import io
+import socket
 from PIL import Image
 
 app = Flask(__name__)
 
-# PyAutoGUI settings
 pyautogui.FAILSAFE = False
 SCREEN_WIDTH, SCREEN_HEIGHT = pyautogui.size()
+
+def get_ip_addresses():
+    """Retrieves all IPv4 addresses associated with the host."""
+    ip_list = []
+    tailscale_ips = []
+    local_ips = []
+    try:
+        hostname = socket.gethostname()
+        _, _, ips = socket.gethostbyname_ex(hostname)
+        for ip in ips:
+            if not ip.startswith("127."):
+                ip_list.append(ip)
+                # Tailscale IPs start with 100.x.x.x
+                if ip.startswith("100."):
+                    tailscale_ips.append(ip)
+                else:
+                    local_ips.append(ip)
+    except Exception as e:
+        print(f"Error getting IPs: {e}")
+    return ip_list, tailscale_ips, local_ips
 
 def gen_frames():
     """Captures the screen and streams it as video."""
@@ -18,11 +38,11 @@ def gen_frames():
             try:
                 sct_img = sct.grab(monitor)
                 img = Image.frombytes("RGB", sct_img.size, sct_img.bgra, "raw", "BGRX")
-                new_width = int(SCREEN_WIDTH / 2)
-                new_height = int(SCREEN_HEIGHT / 2)
+                new_width = int(SCREEN_WIDTH * 0.75)
+                new_height = int(SCREEN_HEIGHT * 0.75)
                 img = img.resize((new_width, new_height))
                 frame_bytes = io.BytesIO()
-                img.save(frame_bytes, format='JPEG', quality=40)
+                img.save(frame_bytes, format='JPEG', quality=70)
                 frame = frame_bytes.getvalue()
                 yield (b'--frame\r\n'
                        b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
@@ -51,9 +71,6 @@ def click():
     pyautogui.moveTo(x, y)
     pyautogui.click()
     
-    # Release Alt key if it was held down (for Alt-Tab)
-    pyautogui.keyUp('alt')
-    
     return jsonify({"status": "success"})
 
 @app.route('/type', methods=['POST'])
@@ -74,12 +91,58 @@ def press_key():
 
 @app.route('/alttab', methods=['POST'])
 def alt_tab():
+    """Opens Alt-Tab menu and keeps Alt key pressed."""
     try:
         pyautogui.keyDown('alt')
+        pyautogui.press('tab')
+        # Keep Alt key pressed - don't release it
+        return jsonify({"status": "success", "message": "Alt-Tab menu opened"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+
+@app.route('/alttab_tab', methods=['POST'])
+def alt_tab_navigate():
+    """Presses Tab while Alt is held to navigate through windows."""
+    try:
         pyautogui.press('tab')
         return jsonify({"status": "success"})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
 
+@app.route('/alttab_release', methods=['POST'])
+def alt_tab_release():
+    """Releases Alt key to select the current window."""
+    try:
+        pyautogui.keyUp('alt')
+        return jsonify({"status": "success", "message": "Window selected"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+
 if __name__ == '__main__':
+    print("\n" + "="*50)
+    print("🚀 LanPilot is Launching!")
+    print("="*50 + "\n")
+    
+    ips, tailscale_ips, local_ips = get_ip_addresses()
+    
+    if not ips:
+        print("⚠️  No network interface found! You might only be able to connect via localhost.")
+    else:
+        # Show Tailscale IPs first (if available) for remote access
+        if tailscale_ips:
+            print("🌍 Tailscale VPN (Remote Access):")
+            for ip in tailscale_ips:
+                print(f"   🔒 http://{ip}:5000")
+            print()
+        
+        # Show local network IPs
+        if local_ips:
+            print("📱 Local Network (Same WiFi):")
+            for ip in local_ips:
+                print(f"   👉 http://{ip}:5000")
+            print()
+            
+    print("   💻 Local access: http://127.0.0.1:5000")
+    print("="*50 + "\n")
+
     app.run(host='0.0.0.0', port=5000, threaded=True)

@@ -49,15 +49,24 @@
         .blue { background-color: rgba(13, 110, 253, 0.6); }
         .green { background-color: rgba(40, 167, 69, 0.6); }
         .red { background-color: rgba(220, 53, 69, 0.6); }
+        .orange { background-color: rgba(255, 140, 0, 0.6); }
+        .alt-tab-active { 
+            background-color: rgba(13, 110, 253, 0.9) !important;
+            box-shadow: 0 0 15px rgba(13, 110, 253, 0.8);
+        }
     </style>
 </head>
 <body>
     <div id="stream-wrapper">
-        <img id="screen" src="{{ url_for('video_feed') }}">
+        <img id="screen" src="{{ url_for('video_feed') }}" 
+             data-screen-width="{{ pc_screen_width }}" 
+             data-screen-height="{{ pc_screen_height }}">
     </div>
     <div id="menu-toggle-btn">☰</div>
     <div id="ui-layer" class="hidden">
-        <button class="btn blue" ontouchstart="triggerAltTab(); event.preventDefault()" onclick="triggerAltTab()">Alt-Tab</button>
+        <button id="alt-tab-btn" class="btn blue" ontouchstart="triggerAltTab(); event.preventDefault()" onclick="triggerAltTab()">Alt-Tab</button>
+        <button id="alt-tab-tab-btn" class="btn orange hidden" ontouchstart="navigateAltTab(); event.preventDefault()" onclick="navigateAltTab()">Tab →</button>
+        <button id="alt-tab-select-btn" class="btn green hidden" ontouchstart="selectAltTab(); event.preventDefault()" onclick="selectAltTab()">✓ Seç</button>
         <button class="btn" ontouchstart="sendText(); event.preventDefault()" onclick="sendText()">⌨️ Type</button>
         <button class="btn green" ontouchstart="sendKey('enter'); event.preventDefault()" onclick="sendKey('enter')">↵ Enter</button>
         <button class="btn red" ontouchstart="sendKey('backspace'); event.preventDefault()" onclick="sendKey('backspace')">⌫ Del</button>
@@ -67,39 +76,10 @@
         const img = document.getElementById('screen');
         const uiLayer = document.getElementById('ui-layer');
         const menuBtn = document.getElementById('menu-toggle-btn');
-
-        // Accurate click logic with aspect ratio mapping
-        img.addEventListener('click', (e) => {
-            const pcScreenRatio = {{ pc_screen_width }} / {{ pc_screen_height }};
-            const rect = img.getBoundingClientRect();
-            const containerRatio = rect.width / rect.height;
-
-            let renderedWidth, renderedHeight, offsetX, offsetY;
-
-            if (containerRatio > pcScreenRatio) {
-                renderedHeight = rect.height;
-                renderedWidth = renderedHeight * pcScreenRatio;
-                offsetX = (rect.width - renderedWidth) / 2;
-                offsetY = 0;
-            } else {
-                renderedWidth = rect.width;
-                renderedHeight = renderedWidth / pcScreenRatio;
-                offsetX = 0;
-                offsetY = (rect.height - renderedHeight) / 2;
-            }
-
-            const xOnImage = e.clientX - rect.left - offsetX;
-            const yOnImage = e.clientY - rect.top - offsetY;
-
-            if (xOnImage < 0 || xOnImage > renderedWidth || yOnImage < 0 || yOnImage > renderedHeight) {
-                return;
-            }
-
-            const finalRelX = xOnImage / renderedWidth;
-            const finalRelY = yOnImage / renderedHeight;
-
-            postData('/click', { x: finalRelX, y: finalRelY });
-        });
+        
+        // Get screen dimensions from data attributes
+        const PC_SCREEN_WIDTH = parseInt(img.dataset.screenWidth);
+        const PC_SCREEN_HEIGHT = parseInt(img.dataset.screenHeight);
 
         // Draggable button logic
         let isDragging = false, hasMoved = false, offsetXBtn, offsetYBtn;
@@ -138,15 +118,88 @@
         document.addEventListener('touchmove', dragMove, { passive: false });
         document.addEventListener('touchend', dragEnd);
 
-        function triggerAltTab() { postData('/alttab', {}); }
+        let altTabActive = false;
+        const altTabBtn = document.getElementById('alt-tab-btn');
+        const altTabTabBtn = document.getElementById('alt-tab-tab-btn');
+        const altTabSelectBtn = document.getElementById('alt-tab-select-btn');
+
+        function triggerAltTab() {
+            if (!altTabActive) {
+                // Open Alt-Tab menu
+                postData('/alttab', {}).then(() => {
+                    altTabActive = true;
+                    altTabBtn.classList.add('alt-tab-active');
+                    altTabBtn.textContent = 'Alt-Tab ✓';
+                    altTabTabBtn.classList.remove('hidden');
+                    altTabSelectBtn.classList.remove('hidden');
+                });
+            }
+        }
+
+        function navigateAltTab() {
+            // Navigate to next window
+            postData('/alttab_tab', {});
+        }
+
+        function selectAltTab() {
+            // Release Alt key to select current window
+            postData('/alttab_release', {}).then(() => {
+                altTabActive = false;
+                altTabBtn.classList.remove('alt-tab-active');
+                altTabBtn.textContent = 'Alt-Tab';
+                altTabTabBtn.classList.add('hidden');
+                altTabSelectBtn.classList.add('hidden');
+            });
+        }
+
+        // Release Alt-Tab when clicking on screen
+        img.addEventListener('click', (e) => {
+            if (altTabActive) {
+                selectAltTab();
+                // Don't process the click as a normal click
+                return;
+            }
+            
+            // Normal click logic
+            const pcScreenRatio = PC_SCREEN_WIDTH / PC_SCREEN_HEIGHT;
+            const rect = img.getBoundingClientRect();
+            const containerRatio = rect.width / rect.height;
+
+            let renderedWidth, renderedHeight, offsetX, offsetY;
+
+            if (containerRatio > pcScreenRatio) {
+                renderedHeight = rect.height;
+                renderedWidth = renderedHeight * pcScreenRatio;
+                offsetX = (rect.width - renderedWidth) / 2;
+                offsetY = 0;
+            } else {
+                renderedWidth = rect.width;
+                renderedHeight = renderedWidth / pcScreenRatio;
+                offsetX = 0;
+                offsetY = (rect.height - renderedHeight) / 2;
+            }
+
+            const xOnImage = e.clientX - rect.left - offsetX;
+            const yOnImage = e.clientY - rect.top - offsetY;
+
+            if (xOnImage < 0 || xOnImage > renderedWidth || yOnImage < 0 || yOnImage > renderedHeight) {
+                return;
+            }
+
+            const finalRelX = xOnImage / renderedWidth;
+            const finalRelY = yOnImage / renderedHeight;
+
+            postData('/click', { x: finalRelX, y: finalRelY });
+        });
+
         function sendText() { let text = prompt("Text to type:"); if (text) postData('/type', { text: text }); }
         function sendKey(key) { postData('/key', { key: key }); }
         function postData(url, data) {
-            fetch(url, {
+            return fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
-            }).catch(error => console.error('Error:', error));
+            }).then(response => response.json()).catch(error => console.error('Error:', error));
         }
     </script>
 </body>
