@@ -1,10 +1,11 @@
 # ✈️ LanPilot: Local Network Remote Desktop
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Version-2.0-brightgreen.svg" alt="Version">
-  <img src="https://img.shields.io/badge/Python-3.7+-blue.svg" alt="Python">
+  <a href="https://github.com/basaranbaran/LanPilot/actions/workflows/ci.yml"><img src="https://github.com/basaranbaran/LanPilot/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <img src="https://img.shields.io/badge/Version-2.1-brightgreen.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Python-3.9+-blue.svg" alt="Python">
   <img src="https://img.shields.io/badge/Flask-2.0+-green.svg" alt="Flask">
-  <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License"></a>
   <br>
   <strong>Wireless • Low Latency • Tailscale VPN Support</strong>
 </p>
@@ -24,7 +25,7 @@
 
 Sometimes the best projects are born from necessity (or a bit of laziness). LanPilot started when I wanted to control my PC from the kitchen without walking back to my desk. Existing tools like TeamViewer were too heavy for such a simple task and required internet. So, I decided to build my own lightweight solution running entirely on the local network.
 
-As demonstrated in the video, I tested it by picking a League of Legends champion. Yes, sometimes you develop software just so you don't miss your pick during the draft phase while grabbing a snack 😁
+As demonstrated in the [demo video](https://github.com/basaranbaran/LanPilot/releases/download/v2.1.0/sample-video.mp4), I tested it by picking a League of Legends champion. Yes, sometimes you develop software just so you don't miss your pick during the draft phase while grabbing a snack 😁
 
 
 
@@ -55,8 +56,11 @@ The most exciting technical details that make this project special:
 - ⌨️ **Keyboard Support:** Type text, press Enter, Backspace, and Alt-Tab for full control.
 
 - 🛡️ **Security & Privacy:** 
-  - **Local Network Mode:** Data never leaves your local network (Localhost/WiFi).
+  - **PIN Login:** Nothing is reachable without a PIN. A random 6-digit PIN is printed in the terminal on every start (or set your own with `LANPILOT_PIN`). Wrong guesses are rate-limited and locked out.
+  - **Local Network Mode:** Data never leaves your local network (Localhost/WiFi). Traffic is plain HTTP there, so use a network you trust.
   - **Tailscale VPN Mode:** When using Tailscale, data travels through an encrypted private network. Only devices logged into your account can access.
+  - **Restricted Input:** Typed text is capped, and only a short list of keys can be pressed from the phone.
+  - See [SECURITY.md](SECURITY.md) for the full threat model and how to report a vulnerability.
 
 
 ### 🚀 Setup
@@ -79,8 +83,16 @@ The most exciting technical details that make this project special:
    ```
 
 4. **Connect:**
-   Open your phone's browser and go to `http://YOUR_PC_IP:5000` (e.g., `192.168.1.20:5000`).
+   Open your phone's browser and go to `http://YOUR_PC_IP:5000` (e.g., `192.168.1.20:5000`), then enter the **PIN** printed in the terminal.
    > 💡 **Tip:** The app will automatically detect and display all available connection URLs when it starts, including Tailscale VPN IPs (if installed) and local network IPs.
+
+**Options:**
+
+| What | How |
+|------|-----|
+| Keep the same PIN between runs | `LANPILOT_PIN=my-secret-pin python app.py` (at least 6 characters) |
+| Listen on one interface only | `python app.py --host 100.x.y.z` (e.g. your Tailscale IP) |
+| Use another port | `python app.py --port 8080` |
 
 
 ### 📱 How to Connect (Remote Control)
@@ -106,7 +118,7 @@ Controls your PC from anywhere (4G, Office, Vacation) without port forwarding.
 4.  **Run:** Start LanPilot (`python app.py`).
 5.  **Connect:** The app will automatically detect and display your secure **Tailscale IP** (starts with `100.x`) with a 🔒 icon. Use that link on your phone to connect from anywhere in the world.
 
-> **🔒 Security Note:** Tailscale creates a private encrypted network. Only devices logged into **your** account can access this IP. Strangers cannot connect.
+> **🔒 Security Note:** Tailscale creates a private encrypted network. Only devices logged into **your** account can access this IP. Strangers cannot connect, and the PIN adds a second layer.
 
 
 ### 🛠️ Technical Details
@@ -137,6 +149,18 @@ The core challenge was ensuring pixel-perfect clicking accuracy when the phone a
 This ensures that tapping anywhere on your phone screen results in an accurate click on the corresponding location on your PC screen.
 
 
+### 🧪 Development
+
+The web layer talks to the desktop through a small `Controller` interface, so the tests use a fake one and never move your real mouse.
+
+```bash
+pip install -r requirements-dev.txt
+python -m pytest
+```
+
+CI runs the same tests on Python 3.9 and 3.12 for every push and pull request.
+
+
 ### 🙏 Acknowledgments
 
 
@@ -157,7 +181,7 @@ Bazen en iyi projeler kendi ihtiyacımdan veya "tembelliğimizden" doğar derler
 
 Bilgisayar başından kalkıp mutfağa gittiğimde, arka plandaki işlemleri kontrol etmek için tekrar odaya dönmek zor geliyordu. TeamViewer gibi uygulamalar hem internet gerektiriyor hem de bu basit ihtiyaç için hantal kalıyordu. Ben de "Neden kendi hafif (lightweight) çözümümü yazmıyorum?" dedim ve ortaya yerel ağ üzerinden çalışan bu aracı çıkardım.
 
-Videoda göreceğiniz üzere sistemi League of Legends karakter seçim ekranında test ettim. Evet, bazen sırf şampiyon seçimini mutfaktan yapabilmek ve sırayı kaçırmamak için bile yazılım geliştirebiliyorsunuz 😁
+[Demo videoda](https://github.com/basaranbaran/LanPilot/releases/download/v2.1.0/sample-video.mp4) göreceğiniz üzere sistemi League of Legends karakter seçim ekranında test ettim. Evet, bazen sırf şampiyon seçimini mutfaktan yapabilmek ve sırayı kaçırmamak için bile yazılım geliştirebiliyorsunuz 😁
 
 
 ### 🎯 Projenin Amacı
@@ -186,8 +210,11 @@ Bilgisayar başında değilken (balkonda, mutfakta veya yatakta) bilgisayarını
 - ⌨️ **Klavye Desteği:** Metin yazma, Enter, Backspace ve Alt-Tab ile tam kontrol.
 
 - 🛡️ **Güvenlik & Gizlilik:**
-  - **Yerel Ağ Modu:** Verileriniz dış internete çıkmaz, tamamen yerel ağda (Localhost/WiFi) döner.
+  - **PIN ile Giriş:** PIN olmadan hiçbir şeye erişilemez. Her başlangıçta terminalde rastgele 6 haneli bir PIN yazılır (kendi PIN'inizi `LANPILOT_PIN` ile belirleyebilirsiniz). Yanlış denemeler sınırlandırılır ve kilitlenir.
+  - **Yerel Ağ Modu:** Verileriniz dış internete çıkmaz, tamamen yerel ağda (Localhost/WiFi) döner. Bu modda trafik düz HTTP'dir, bu yüzden güvendiğiniz bir ağ kullanın.
   - **Tailscale VPN Modu:** Tailscale kullanırken veriler şifreli özel ağ üzerinden iletilir. Sadece sizin hesabınızla giriş yapılmış cihazlar erişebilir.
+  - **Kısıtlı Girdi:** Yazılan metin sınırlıdır ve telefondan yalnızca kısa bir tuş listesine basılabilir.
+  - Tehdit modelinin tamamı ve açık bildirme yöntemi için [SECURITY.md](SECURITY.md) dosyasına bakın.
 
 
 ### 🚀 Kurulum
@@ -210,8 +237,16 @@ Bilgisayar başında değilken (balkonda, mutfakta veya yatakta) bilgisayarını
    ```
 
 4. **Bağlanın:**
-   Telefonunuzun tarayıcısından `http://BILGISAYAR_IP_ADRESI:5000` adresine gidin (Örn: `192.168.1.20:5000`).
+   Telefonunuzun tarayıcısından `http://BILGISAYAR_IP_ADRESI:5000` adresine gidin (Örn: `192.168.1.20:5000`) ve terminalde yazan **PIN**'i girin.
    > İpucu: Uygulama başladığında kullanabileceğiniz tüm adresleri ekrana yazdırır.
+
+**Seçenekler:**
+
+| Ne | Nasıl |
+|----|-------|
+| PIN'i her çalıştırmada aynı tutmak | `LANPILOT_PIN=gizli-pin python app.py` (en az 6 karakter) |
+| Yalnızca tek bir arayüzü dinlemek | `python app.py --host 100.x.y.z` (örn. Tailscale IP'niz) |
+| Başka bir port kullanmak | `python app.py --port 8080` |
 
 
 ### 📱 Nasıl Bağlanılır?
@@ -237,7 +272,7 @@ Port açma derdi olmadan, marketten veya başka bir şehirden bilgisayarınızı
 4.  **Başlat:** LanPilot'u çalıştırın (`python app.py`).
 5.  **Bağlan:** Uygulama güvenli **Tailscale IP** adresinizi ( `100.x` ile başlar) 🔒 ikonu ile otomatik gösterir. Dünyanın her yerinden o adrese girerek bağlanabilirsiniz.
 
-> **🔒 Güvenlik Notu:** Tailscale size özel şifreli bir ağ kurar. Sadece **sizin** hesabınızla giriş yapılmış cihazlar bu IP'ye erişebilir. Başkası giremez.
+> **🔒 Güvenlik Notu:** Tailscale size özel şifreli bir ağ kurar. Sadece **sizin** hesabınızla giriş yapılmış cihazlar bu IP'ye erişebilir. Başkası giremez, PIN ise ikinci bir katman ekler.
 
 
 ### 🛠️ Teknik Detaylar
@@ -266,6 +301,18 @@ Piksel hassasiyetinde tıklama doğruluğu sağlamak, telefon ve PC'nin farklı 
 5. Göreceli koordinatları mutlak piksel koordinatlarına dönüştürür
 
 Bu sayede telefon ekranınızda herhangi bir yere dokunduğunuzda, PC ekranınızda karşılık gelen konuma doğru bir tıklama yapılır.
+
+
+### 🧪 Geliştirme
+
+Web katmanı masaüstü ile küçük bir `Controller` arayüzü üzerinden konuşur. Testler sahte bir controller kullanır, gerçek farenizi hareket ettirmez.
+
+```bash
+pip install -r requirements-dev.txt
+python -m pytest
+```
+
+CI, her push ve pull request'te aynı testleri Python 3.9 ve 3.12 üzerinde çalıştırır.
 
 
 ### 🙏 Teşekkürler
