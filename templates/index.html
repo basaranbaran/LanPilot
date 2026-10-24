@@ -70,6 +70,7 @@
         <button class="btn" ontouchstart="sendText(); event.preventDefault()" onclick="sendText()">⌨️ Type</button>
         <button class="btn green" ontouchstart="sendKey('enter'); event.preventDefault()" onclick="sendKey('enter')">↵ Enter</button>
         <button class="btn red" ontouchstart="sendKey('backspace'); event.preventDefault()" onclick="sendKey('backspace')">⌫ Del</button>
+        <button class="btn" ontouchstart="lock(); event.preventDefault()" onclick="lock()">🔒 Lock</button>
     </div>
 
     <script>
@@ -126,7 +127,8 @@
         function triggerAltTab() {
             if (!altTabActive) {
                 // Open Alt-Tab menu
-                postData('/alttab', {}).then(() => {
+                postData('/alttab', {}).then((res) => {
+                    if (!res || res.status !== 'success') return;
                     altTabActive = true;
                     altTabBtn.classList.add('alt-tab-active');
                     altTabBtn.textContent = 'Alt-Tab ✓';
@@ -143,7 +145,8 @@
 
         function selectAltTab() {
             // Release Alt key to select current window
-            postData('/alttab_release', {}).then(() => {
+            postData('/alttab_release', {}).then((res) => {
+                if (!res || res.status !== 'success') return;
                 altTabActive = false;
                 altTabBtn.classList.remove('alt-tab-active');
                 altTabBtn.textContent = 'Alt-Tab';
@@ -192,14 +195,29 @@
             postData('/click', { x: finalRelX, y: finalRelY });
         });
 
-        function sendText() { let text = prompt("Text to type:"); if (text) postData('/type', { text: text }); }
+        function sendText() {
+            const text = prompt("Text to type (max 200 characters):");
+            if (!text) return;
+            if (text.length > 200) { alert("Too long: the limit is 200 characters."); return; }
+            postData('/type', { text: text });
+        }
         function sendKey(key) { postData('/key', { key: key }); }
+        function lock() {
+            postData('/logout', {}).then(() => { window.location.href = '/login'; });
+        }
         function postData(url, data) {
             return fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
-            }).then(response => response.json()).catch(error => console.error('Error:', error));
+            }).then(response => {
+                if (response.status === 401) {
+                    // Session expired or server restarted: ask for the PIN again.
+                    window.location.href = '/login';
+                    return null;
+                }
+                return response.json();
+            }).catch(error => console.error('Error:', error));
         }
     </script>
 </body>
