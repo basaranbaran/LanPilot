@@ -90,7 +90,7 @@ The most exciting technical details that make this project special:
 
 | What | How |
 |------|-----|
-| Keep the same PIN between runs | `LANPILOT_PIN=my-secret-pin python app.py` (at least 6 characters) |
+| Keep the same PIN between runs | `LANPILOT_PIN=my-secret-pin python app.py` (6 to 128 characters) |
 | Listen on one interface only | `python app.py --host 100.x.y.z` (e.g. your Tailscale IP) |
 | Use another port | `python app.py --port 8080` |
 
@@ -244,7 +244,7 @@ Bilgisayar başında değilken (balkonda, mutfakta veya yatakta) bilgisayarını
 
 | Ne | Nasıl |
 |----|-------|
-| PIN'i her çalıştırmada aynı tutmak | `LANPILOT_PIN=gizli-pin python app.py` (en az 6 karakter) |
+| PIN'i her çalıştırmada aynı tutmak | `LANPILOT_PIN=gizli-pin python app.py` (6 ile 128 karakter arası) |
 | Yalnızca tek bir arayüzü dinlemek | `python app.py --host 100.x.y.z` (örn. Tailscale IP'niz) |
 | Başka bir port kullanmak | `python app.py --port 8080` |
 

@@ -1,6 +1,6 @@
 import pytest
 
-from app import MIN_PIN_LENGTH, create_app, generate_pin
+from app import MAX_PIN_LENGTH, MIN_PIN_LENGTH, create_app, generate_pin, main
 
 from conftest import PIN
 
@@ -106,9 +106,29 @@ def test_security_headers(client):
     assert "frame-ancestors 'none'" in headers["Content-Security-Policy"]
 
 
-def test_short_pin_is_refused(desktop):
+@pytest.mark.parametrize("bad_pin", ["12345", "x" * (MAX_PIN_LENGTH + 1)])
+def test_pin_outside_allowed_length_is_refused(desktop, bad_pin):
     with pytest.raises(ValueError):
-        create_app(controller=desktop, pin="12345")
+        create_app(controller=desktop, pin=bad_pin)
+
+
+def test_longest_allowed_pin_can_log_in(desktop):
+    long_pin = "p" * MAX_PIN_LENGTH
+    client = create_app(controller=desktop, pin=long_pin).test_client()
+    assert client.post("/login", data={"pin": long_pin}).status_code == 302
+
+
+def test_overlong_guess_never_matches_by_truncation(desktop):
+    long_pin = "p" * MAX_PIN_LENGTH
+    client = create_app(controller=desktop, pin=long_pin).test_client()
+    assert client.post("/login", data={"pin": long_pin + "extra"}).status_code == 401
+
+
+@pytest.mark.parametrize("env_pin", ["123", "x" * (MAX_PIN_LENGTH + 1)])
+def test_main_rejects_bad_env_pin(monkeypatch, env_pin):
+    monkeypatch.setenv("LANPILOT_PIN", env_pin)
+    with pytest.raises(SystemExit):
+        main([])
 
 
 def test_generated_pin_shape():

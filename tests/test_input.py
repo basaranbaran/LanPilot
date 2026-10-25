@@ -77,8 +77,9 @@ def test_non_object_json_is_rejected(authed, desktop):
 
 
 def test_oversized_body_is_rejected(authed, desktop):
+    # Flask 2.0 reports 400 here and newer versions 413. Either way nothing may be typed.
     response = authed.post("/type", json={"text": "a" * 20_000})
-    assert response.status_code == 413
+    assert response.status_code in (400, 413)
     assert desktop.calls == []
 
 

@@ -15,7 +15,7 @@ Include what you did, what you expected, and what happened. You will get a first
 
 ## What LanPilot protects
 
-- **PIN login.** Every route except `/login` needs a session. A random 6-digit PIN is generated on each start, or you can set your own with `LANPILOT_PIN` (at least 6 characters).
+- **PIN login.** Every route except `/login` needs a session. A random 6-digit PIN is generated on each start, or you can set your own with `LANPILOT_PIN` (6 to 128 characters).
 - **Brute-force lockout.** 5 wrong PINs lock an address out for 5 minutes. 20 wrong PINs from any addresses pause all logins for 10 minutes.
 - **Session cookie.** Signed, `HttpOnly`, `SameSite=Strict`, valid for 12 hours, and invalidated on every restart.
 - **Input validation.** Clicks must be coordinates between 0 and 1. Typed text is capped at 200 characters. Only a short list of keys can be pressed (Enter, Backspace, arrows, and similar). Request bodies must be JSON and are capped at 16 KB.

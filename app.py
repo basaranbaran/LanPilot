@@ -24,6 +24,7 @@ from flask import (
 )
 
 MIN_PIN_LENGTH = 6
+MAX_PIN_LENGTH = 128
 MAX_TEXT_LENGTH = 200
 SESSION_HOURS = 12
 
@@ -165,8 +166,8 @@ def get_ip_addresses() -> Tuple[List[str], List[str], List[str]]:
 def create_app(controller: Optional[Controller] = None, pin: Optional[str] = None,
                clock: Callable[[], float] = time.monotonic) -> Flask:
     pin = pin if pin is not None else generate_pin()
-    if len(pin) < MIN_PIN_LENGTH:
-        raise ValueError(f"PIN must be at least {MIN_PIN_LENGTH} characters long.")
+    if not MIN_PIN_LENGTH <= len(pin) <= MAX_PIN_LENGTH:
+        raise ValueError(f"PIN must be {MIN_PIN_LENGTH} to {MAX_PIN_LENGTH} characters long.")
     pin_bytes = pin.encode("utf-8")
     desktop: Controller = controller if controller is not None else DesktopController()
 
@@ -228,7 +229,8 @@ def create_app(controller: Optional[Controller] = None, pin: Optional[str] = Non
                                     error=f"Too many attempts. Try again in {seconds} s."),
                     429, {"Retry-After": str(seconds)})
 
-        candidate = request.form.get("pin", "")[:128].encode("utf-8")
+        # One character past the maximum, so an over-long guess can never match by truncation.
+        candidate = request.form.get("pin", "")[:MAX_PIN_LENGTH + 1].encode("utf-8")
         if hmac.compare_digest(candidate, pin_bytes):
             ip_limiter.reset(ip)
             session.clear()
@@ -352,8 +354,8 @@ def main(argv: Optional[List[str]] = None) -> None:
     args = parser.parse_args(argv)
 
     env_pin = os.environ.get("LANPILOT_PIN")
-    if env_pin is not None and len(env_pin) < MIN_PIN_LENGTH:
-        parser.error(f"LANPILOT_PIN must be at least {MIN_PIN_LENGTH} characters long.")
+    if env_pin is not None and not MIN_PIN_LENGTH <= len(env_pin) <= MAX_PIN_LENGTH:
+        parser.error(f"LANPILOT_PIN must be {MIN_PIN_LENGTH} to {MAX_PIN_LENGTH} characters long.")
     pin = env_pin or generate_pin()
 
     app = create_app(pin=pin)
