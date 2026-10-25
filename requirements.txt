@@ -1,4 +1,4 @@
-Flask
-mss
-PyAutoGUI
-Pillow
+Flask>=2.0
+mss>=9.0
+PyAutoGUI>=0.9.54
+Pillow>=9.0

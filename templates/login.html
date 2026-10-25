@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="color-scheme" content="dark">
+    <title>LanPilot Login</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body {
+            min-height: 100vh;
+            background: radial-gradient(120% 80% at 50% 0%, #1b2538 0%, #05070b 70%);
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        main {
+            min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            padding: max(24px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom));
+        }
+        form {
+            width: 100%; max-width: 360px;
+            padding: 32px 24px 24px;
+            background: rgba(30, 30, 30, 0.7);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-top-color: rgba(255, 255, 255, 0.28);
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            display: flex; flex-direction: column; gap: 16px;
+        }
+        h1 { font-size: 1.75rem; line-height: 1.1; letter-spacing: -0.02em; font-weight: 700; }
+        p.hint { font-size: 0.9375rem; line-height: 1.4; color: rgba(255, 255, 255, 0.72); }
+        input, button {
+            font: inherit; font-size: 1.0625rem; /* 17px: iOS does not zoom on focus */
+            min-height: 48px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.16);
+            padding: 0 16px; color: #fff;
+        }
+        input {
+            background: rgba(0, 0, 0, 0.35); letter-spacing: 0.08em; text-align: center;
+        }
+        input:focus-visible, button:focus-visible { outline: 2px solid #0d6efd; outline-offset: 2px; }
+        button {
+            background: rgba(13, 110, 253, 0.85); font-weight: 600; cursor: pointer;
+            transition: transform 100ms ease-out;
+        }
+        button:active { transform: scale(0.97); }
+        .error {
+            font-size: 0.9375rem; color: #ff8d98; text-align: center;
+        }
+        @media (prefers-reduced-transparency: reduce) {
+            form { background: #1e1e1e; backdrop-filter: none; -webkit-backdrop-filter: none; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            button { transition: none; }
+            button:active { transform: none; }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <form method="post" action="{{ url_for('login') }}" autocomplete="off">
+            <h1>✈️ LanPilot</h1>
+            <p class="hint">Enter the PIN shown in the terminal on your PC.</p>
+            <input type="password" name="pin" placeholder="PIN" aria-label="PIN"
+                   autocomplete="current-password" autocapitalize="off" autocorrect="off"
+                   maxlength="128" required autofocus>
+            {% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+            <button type="submit">Unlock</button>
+        </form>
+    </main>
+</body>
+</html>
